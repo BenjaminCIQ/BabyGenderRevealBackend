@@ -44,7 +44,7 @@ def init_db():
 def index():
     return render_template('index.html')
 
-@app.route('/api/vote', methods=['POST'])
+@app.route('/vote', methods=['POST'])
 def submit_vote():
     data = request.get_json()
     name = data.get('name', 'Anonymous')
@@ -81,7 +81,7 @@ def submit_vote():
     
     return jsonify({'success': True}), 201
 
-@app.route('/api/results', methods=['GET'])
+@app.route('/results', methods=['GET'])
 def get_results():
     db = get_db()
     cursor = db.cursor()
@@ -127,7 +127,7 @@ def get_results():
     
     return jsonify(results)
 
-@app.route('/api/admin/reveal', methods=['POST'])
+@app.route('/admin/reveal', methods=['POST'])
 def reveal():
     data = request.get_json()
     admin_key = data.get('admin_key')
@@ -155,7 +155,7 @@ def reveal():
     
     return jsonify({'success': True})
 
-@app.route('/api/admin/reset', methods=['POST'])
+@app.route('/admin/reset', methods=['POST'])
 def reset_results():
     data = request.get_json()
     admin_key = data.get('admin_key')
