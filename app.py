@@ -57,6 +57,7 @@ def submit_vote():
 
     voter_id = request.cookies.get('voter_id')
     
+    existing_vote = False
     if not voter_id:
         # First time visitor
         voter_id = str(uuid.uuid4())
