@@ -47,7 +47,12 @@ def submit_vote():
     vote = data.get('vote')
     
     # Get client IP address
-    ip_address = request.remote_addr
+    if request.headers.get('X-Forwarded-For'):
+        ip_address = request.headers.get('X-Forwarded-For').split(',')[0].strip()
+    elif request.headers.get('X-Real-IP'):
+        ip_address = request.headers.get('X-Real-IP')
+    else:
+        ip_address = request.remote_addr
     # If you're behind a proxy, you might need this instead:
     # ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
     
