@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, g
+from flask import Flask, request, jsonify, render_template, g, send_from_directory
 from flask_cors import CORS
 import sqlite3
 import os
@@ -6,6 +6,17 @@ import json
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
+
+app = Flask(__name__, static_folder='../gender_reveal_app/build', static_url_path='/')
+
+# Serve React app
+@app.route('/<path:path>')
+def serve_react(path=''):
+    file_path = os.path.join(app.static_folder, path)
+    if os.path.exists(file_path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
 
 DATABASE = 'gender_reveal.db'
 
