@@ -40,7 +40,7 @@ def init_db():
             db.cursor().executescript(f.read())
         db.commit()
 
-@app.route('api/vote', methods=['POST'])
+@app.route('/api/vote', methods=['POST'])
 def submit_vote():
     data = request.get_json()
     name = data.get('name', 'Anonymous')
