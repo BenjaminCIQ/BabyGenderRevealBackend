@@ -123,7 +123,7 @@ def get_results():
     
     return jsonify(results)
 
-@app.route('/admin/reveal', methods=['POST'])
+@app.route('/api/admin/reveal', methods=['POST'])
 def reveal():
     data = request.get_json()
     admin_key = data.get('admin_key')
@@ -151,7 +151,7 @@ def reveal():
     
     return jsonify({'success': True})
 
-@app.route('/admin/reset', methods=['POST'])
+@app.route('/api/admin/reset', methods=['POST'])
 def reset_results():
     data = request.get_json()
     admin_key = data.get('admin_key')
