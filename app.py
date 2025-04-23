@@ -13,8 +13,6 @@ app = Flask(__name__, static_folder='../gender_reveal_app/build', static_url_pat
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
-    if path.startswith('api'):
-        abort(404)
     file_path = os.path.join(app.static_folder, path)
     if os.path.exists(file_path):
         return send_from_directory(app.static_folder, path)
@@ -42,7 +40,7 @@ def init_db():
             db.cursor().executescript(f.read())
         db.commit()
 
-@app.route('/vote', methods=['POST'])
+@app.route('api/vote', methods=['POST'])
 def submit_vote():
     data = request.get_json()
     name = data.get('name', 'Anonymous')
