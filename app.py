@@ -58,19 +58,23 @@ def submit_vote():
     voter_id = request.cookies.get('voter_id')
     
     existing_vote = False
+
+    db = get_db()
+
     if not voter_id:
         # First time visitor
         voter_id = str(uuid.uuid4())
     else:
         # Check if this voter_id has already voted
-        cursor.execute('SELECT id FROM votes WHERE voter_id = ?', (voter_id,))
-        existing_vote = cursor.fetchone()
+        cursor1 = db.cursor()
+        cursor1.execute('SELECT id FROM votes WHERE voter_id = ?', (voter_id,))
+        existing_vote = cursor1.fetchone()
     
     if not vote or vote not in ['boy', 'girl']:
         return jsonify({'error': 'Invalid vote'}), 400
     
     # Check if gender has been revealed already
-    db = get_db()
+    
     cursor = db.cursor()
     cursor.execute('SELECT revealed FROM reveal WHERE id = 1')
     reveal_info = cursor.fetchone()
