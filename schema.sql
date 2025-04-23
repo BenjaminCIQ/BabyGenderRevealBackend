@@ -1,0 +1,17 @@
+DROP TABLE IF EXISTS votes;
+DROP TABLE IF EXISTS reveal;
+
+CREATE TABLE votes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    vote TEXT NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE reveal (
+    id INTEGER PRIMARY KEY,
+    revealed BOOLEAN NOT NULL DEFAULT 0,
+    actual_gender TEXT
+);
+
+ALTER TABLE votes ADD COLUMN ip_address TEXT;
