@@ -77,7 +77,7 @@ def submit_vote():
     
     return jsonify({'success': True}), 201
 
-@app.route('/results', methods=['GET'])
+@app.route('/api/results', methods=['GET'])
 def get_results():
     db = get_db()
     cursor = db.cursor()
@@ -175,13 +175,13 @@ def reset_results():
     
     return jsonify({'success': True, 'message': 'All data has been reset'})
 
-@app.route('/votes', methods=['GET'])
+@app.route('/api/votes', methods=['GET'])
 def get_votes():
     conn = get_db()
     votes = conn.execute('SELECT * FROM votes ORDER BY timestamp DESC').fetchall()
     return jsonify([dict(row) for row in votes])
 
-@app.route('/delete-vote', methods=['POST'])
+@app.route('/api/delete-vote', methods=['POST'])
 def delete_vote():
     vote_id = request.json.get('id')
     if not vote_id:
