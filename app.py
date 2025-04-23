@@ -45,6 +45,11 @@ def submit_vote():
     data = request.get_json()
     name = data.get('name', 'Anonymous')
     vote = data.get('vote')
+
+    print("Remote addr:", request.remote_addr)
+    print("X-Forwarded-For:", request.headers.get('X-Forwarded-For'))
+    print("X-Real-IP:", request.headers.get('X-Real-IP'))
+    print("All headers:", request.headers)
     
     # Get client IP address
     if request.headers.get('X-Forwarded-For'):
