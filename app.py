@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify, render_template, g, send_from_directory, abort
+from flask import Flask, request, jsonify, render_template, g, send_from_directory, abort, make_response
 from flask_cors import CORS
 import sqlite3
 import os
+import uuid
 import json
 
 app = Flask(__name__)
@@ -46,11 +47,6 @@ def submit_vote():
     name = data.get('name', 'Anonymous')
     vote = data.get('vote')
 
-    print("Remote addr:", request.remote_addr)
-    print("X-Forwarded-For:", request.headers.get('X-Forwarded-For'))
-    print("X-Real-IP:", request.headers.get('X-Real-IP'))
-    print("All headers:", request.headers)
-    
     # Get client IP address
     if request.headers.get('X-Forwarded-For'):
         ip_address = request.headers.get('X-Forwarded-For').split(',')[0].strip()
@@ -58,8 +54,16 @@ def submit_vote():
         ip_address = request.headers.get('X-Real-IP')
     else:
         ip_address = request.remote_addr
-    # If you're behind a proxy, you might need this instead:
-    # ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+
+    voter_id = request.cookies.get('voter_id')
+    
+    if not voter_id:
+        # First time visitor
+        voter_id = str(uuid.uuid4())
+    else:
+        # Check if this voter_id has already voted
+        cursor.execute('SELECT id FROM votes WHERE voter_id = ?', (voter_id,))
+        existing_vote = cursor.fetchone()
     
     if not vote or vote not in ['boy', 'girl']:
         return jsonify({'error': 'Invalid vote'}), 400
@@ -73,19 +77,17 @@ def submit_vote():
     if reveal_info and reveal_info['revealed']:
         return jsonify({'error': 'Voting has closed as gender has been revealed'}), 403
     
-    # Check if this IP has already voted
-    cursor.execute('SELECT id FROM votes WHERE ip_address = ?', (ip_address,))
-    existing_vote = cursor.fetchone()
-    
     if existing_vote:
         return jsonify({'error': 'You have already voted from this device/location'}), 409
     
     # Continue with the vote submission
-    cursor.execute('INSERT INTO votes (name, vote, ip_address) VALUES (?, ?, ?)', 
-                  (name, vote, ip_address))
+    cursor.execute('INSERT INTO votes (name, vote, ip_address, voter_id) VALUES (?, ?, ?, ?)', 
+                  (name, vote, ip_address, voter_id))
     db.commit()
     
-    return jsonify({'success': True}), 201
+    response = make_response(jsonify({"status": "success"}))
+    response.set_cookie('voter_id', voter_id, max_age=60*60*24)  # 1 day expiry
+    return response
 
 @app.route('/api/results', methods=['GET'])
 def get_results():
