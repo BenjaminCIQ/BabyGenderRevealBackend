@@ -5,6 +5,7 @@ CREATE TABLE votes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     vote TEXT NOT NULL,
+    ip_address TEXT,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -13,5 +14,3 @@ CREATE TABLE reveal (
     revealed BOOLEAN NOT NULL DEFAULT 0,
     actual_gender TEXT
 );
-
-ALTER TABLE votes ADD COLUMN ip_address TEXT;

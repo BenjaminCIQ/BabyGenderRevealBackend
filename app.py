@@ -168,6 +168,24 @@ def reset_results():
     
     return jsonify({'success': True, 'message': 'All data has been reset'})
 
+@app.route('/votes', methods=['GET'])
+def get_votes():
+    conn = get_db()
+    votes = conn.execute('SELECT * FROM votes ORDER BY timestamp DESC').fetchall()
+    return jsonify([dict(row) for row in votes])
+
+@app.route('/delete-vote', methods=['POST'])
+def delete_vote():
+    vote_id = request.json.get('id')
+    if not vote_id:
+        return jsonify({'error': 'Missing vote ID'}), 400
+
+    conn = get_db()
+    conn.execute('DELETE FROM votes WHERE id = ?', (vote_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True})
+
 if __name__ == '__main__':
     if not os.path.exists(DATABASE):
         init_db()
