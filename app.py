@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, g, send_from_directory
+from flask import Flask, request, jsonify, render_template, g, send_from_directory, abort
 from flask_cors import CORS
 import sqlite3
 import os
@@ -10,13 +10,15 @@ CORS(app)  # Enable CORS for all routes
 app = Flask(__name__, static_folder='../gender_reveal_app/build', static_url_path='/')
 
 # Serve React app
+@app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
-def serve_react(path=''):
+def serve_react(path):
+    if path.startswith('api'):
+        abort(404)
     file_path = os.path.join(app.static_folder, path)
     if os.path.exists(file_path):
         return send_from_directory(app.static_folder, path)
-    else:
-        return send_from_directory(app.static_folder, 'index.html')
+    return send_from_directory(app.static_folder, 'index.html')
 
 DATABASE = 'gender_reveal.db'
 
@@ -39,10 +41,6 @@ def init_db():
         with app.open_resource('schema.sql', mode='r') as f:
             db.cursor().executescript(f.read())
         db.commit()
-
-@app.route('/')
-def index():
-    return render_template('index.html')
 
 @app.route('/vote', methods=['POST'])
 def submit_vote():
