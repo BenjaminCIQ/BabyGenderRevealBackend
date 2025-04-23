@@ -5,7 +5,8 @@ CREATE TABLE votes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     vote TEXT NOT NULL,
-    voter_id TEXT NOT NULL,
+    ip_address TEXT,
+    voter_id TEXT,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
